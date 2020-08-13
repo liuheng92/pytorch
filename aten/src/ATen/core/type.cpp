@@ -577,6 +577,13 @@ bool TensorType::matchTensor(const at::Tensor& t) {
   bool rg = at::GradMode::is_enabled() && t.requires_grad();
   bool matched_strides = (!t.has_storage() && !stride_properties().isComplete())
     || stride_properties() == computeStrideProps(t.sizes(), t.strides(), t.is_contiguous());
+
+ std::cout << "Scalar (" << (scalarType().value_or(t.scalar_type()) == t.scalar_type())
+    << ") Device (" << (device().value_or(t.device()) == t.device())
+    << ") Grad (" << (requiresGrad().value_or(rg) == rg)
+    << ") stride (" << matched_strides 
+    << ") equal (" <<  is_null_or_equal(sizes().concrete_sizes(), t.sizes()) << ")\n" << std::flush;
+
   return scalarType().value_or(t.scalar_type()) == t.scalar_type()
     && device().value_or(t.device()) == t.device()
     && requiresGrad().value_or(rg) == rg
