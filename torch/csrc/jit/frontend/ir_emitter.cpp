@@ -996,7 +996,13 @@ struct to_ir {
       result_type = merged_result_type.value();
     }
     AT_ASSERT(result_type);
+
     def_stack_.back().merged_return_type_ = result_type;
+
+    if (result_type == AnyType::get() && result->type() != AnyType::get()) {
+      result = graph->insertUncheckedCast(result, result_type);
+    }
+
     graph->insertNode(graph->create(prim::ReturnStmt, {result}, 0));
     exit_blocks.insert(environment_stack->block());
   }
